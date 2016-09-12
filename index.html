@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Beatboxer</title>
+
+    <style>
+      body {
+        background-color: black;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      button {
+        background-color: black;
+        padding: 10px;
+        border: 10px solid white;
+        margin: 5px;
+      }
+
+      button.on {
+        background-color: red;
+        border-color: red;
+      }
+
+      button.ticked {
+        background-color: white;
+        border-color: white;
+      }
+
+      #grid {
+        width: 800px;
+        height: 200px;
+        position: absolute;
+        top:0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="grid"></div>
+    <script>
+      const BPM = 120;
+      const TICKS = 16;
+
+      var wavs = [
+        'wav/kick.wav',
+        'wav/closed.wav',
+        'wav/perc1.wav',
+        'wav/perc2.wav',
+      ];
+      var sounds = [];
+
+      for (i = 0; i < wavs.length; i++) {
+        sounds.push({
+          audio: wavs[i],
+          beats: new Array(TICKS).fill(false),
+        });
+      }
+
+      var grid = document.getElementById('grid');
+      for (var i = 0; i < sounds.length; i++) {
+        for (var t = 0; t < TICKS; t++) {
+          var btn = document.createElement("button");
+          btn.className = "beat";
+          btn.dataset.sound = i;
+          btn.dataset.tick = t;
+          btn.addEventListener('click', function() {
+            this.className = this.className === "beat" ? "beat on" : "beat";
+            sounds[this.dataset.sound].beats[this.dataset.tick] =
+              !sounds[this.dataset.sound].beats[this.dataset.tick];
+          }, false);
+          grid.appendChild(btn);
+        }
+        grid.appendChild(document.createElement("p"));
+      }
+
+      function playTick(tick) {
+        for (var i = 0; i < sounds.length; i++) {
+          if (sounds[i].beats[tick]) {
+            new Audio(sounds[i].audio).play();
+          }
+        }
+      }
+
+      var tick = 0;
+      var beats = document.getElementsByClassName("beat");
+      setInterval(function() {
+        var lastTick = tick === 0 ? TICKS-1 : tick-1;
+
+        for (var i = 0; i < sounds.length; i++) {
+          beats[i*TICKS + lastTick].className =
+            beats[i*TICKS + lastTick].className.replace(/\b ticked\b/,'');
+
+          beats[i*TICKS + tick].className += " ticked";
+        }
+
+        playTick(tick);
+
+        tick = (tick+1) % TICKS;
+      }, 1 / (4*BPM/(60*1000)));
+    </script>
+  </body>
+</html>
