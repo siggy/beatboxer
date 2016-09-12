@@ -80,17 +80,19 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
         // 'sounds/claves.wav',
         // 'sounds/maracas.wav',
       ];
+	  
+      function toggleClass() {
+        this.className = this.className.indexOf(' on') === -1 ?
+          this.className + ' on' :
+          this.className.replace(/\b on\b/, '');
+      }
 
       var grid = document.getElementById('grid');
-      for (var i = 0; i < sounds.length; i++) {
+      for (var i = 0, len = sounds.length; i < len; i++) {
         for (var t = 0; t < TICKS; t++) {
           var btn = document.createElement('button');
           btn.className = 'beat';
-          btn.addEventListener('click', function() {
-            this.className = this.className.indexOf(' on') === -1 ?
-              this.className + ' on' :
-              this.className.replace(/\b on\b/,'');
-          }, false);
+          btn.addEventListener('click', toggleClass, false);
           grid.appendChild(btn);
         }
         grid.appendChild(document.createElement('p'));
@@ -99,9 +101,9 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
       // Drum loop
       var beats = document.getElementsByClassName('beat');
       var tick = 0;
-      var lastTick = TICKS-1;
+      var lastTick = TICKS - 1;
       setInterval(function() {
-        for (var i = 0; i < sounds.length; i++) {
+        for (var i = 0, len = sounds.length; i < len; i++) {
           var lastBeat = beats[i*TICKS + lastTick];
           var beat     = beats[i*TICKS + tick];
 
