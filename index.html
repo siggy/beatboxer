@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
 Beatboxer
 Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
 -->
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8" />
     <title>Beatboxer</title>
 
     <style>
@@ -60,7 +60,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
       const TICKS = 16;
 
       // sounds originated from http://808.html909.com
-      var sounds = [
+      const sounds = [
         'sounds/bass_drum.wav',
         'sounds/snare_drum.wav',
         'sounds/low_tom.wav',
@@ -81,37 +81,37 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
         // 'sounds/maracas.wav',
       ];
 
-      var grid = document.getElementById('grid');
-      for (var i = 0; i < sounds.length; i++) {
-        for (var t = 0; t < TICKS; t++) {
-          var btn = document.createElement('button');
+      const grid = document.getElementById('grid');
+      sounds.forEach(function () {
+        const fragment = document.createDocumentFragment();
+        for (let t = 0; t < TICKS; ++t) {
+          let btn = document.createElement('button');
           btn.className = 'beat';
           btn.addEventListener('click', function() {
-            this.className = this.className.indexOf(' on') === -1 ?
-              this.className + ' on' :
-              this.className.replace(/\b on\b/,'');
+            this.classList.toggle('on');
           }, false);
-          grid.appendChild(btn);
+          fragment.appendChild(btn);
         }
+        grid.appendChild(fragment);
         grid.appendChild(document.createElement('p'));
-      }
+      });
 
       // Drum loop
-      var beats = document.getElementsByClassName('beat');
-      var tick = 0;
-      var lastTick = TICKS-1;
+      const beats = document.getElementsByClassName('beat');
+      let tick = 0;
+      let lastTick = TICKS-1;
       setInterval(function() {
-        for (var i = 0; i < sounds.length; i++) {
-          var lastBeat = beats[i*TICKS + lastTick];
-          var beat     = beats[i*TICKS + tick];
+        sounds.forEach(function (sound, soundIndex) {
+          const lastBeat = beats[soundIndex*TICKS + lastTick];
+          const beat     = beats[soundIndex*TICKS + tick];
 
-          lastBeat.className = lastBeat.className.replace(/\b ticked\b/,'');
-          beat.className += ' ticked';
+          lastBeat.classList.remove('ticked');
+          beat.classList.add('ticked');
 
-          if (beat.className.indexOf(' on') !== -1) {
-            new Audio(sounds[i]).play();
+          if (beat.classList.contains('on')) {
+            new Audio(sound).play();
           }
-        }
+        });
 
         lastTick = tick;
         tick = (tick+1) % TICKS;
