@@ -140,11 +140,18 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
             lastBeat.classList.remove('ticked');
             curBeat.classList.add('ticked');
 
-            if (curBeat.classList.contains('on') && buffers.length > 0) {
-              const source = audioCtx.createBufferSource();
-              source.buffer = buffers[i];
-              source.connect(audioCtx.destination);
-              source.start();
+            if (curBeat.classList.contains('on')) {
+              try {
+                const source = audioCtx.createBufferSource();
+                source.buffer = buffers[i];
+                source.connect(audioCtx.destination);
+                source.start();
+              } catch (e) {
+                console.error(e.message);
+
+                // Fallback method
+                new Audio(sounds[i]).play();
+              }
             }
           }
 
