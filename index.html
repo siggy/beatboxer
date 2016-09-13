@@ -124,18 +124,28 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
 
       const beats = document.getElementsByClassName('beat');
 
-      var lastTick = TICKS-1;
+      var lastTick = TICKS - 1;
       var curTick  = 0;
 
       var lastTime = new Date().getTime();
       var curTime  = lastTime;
 
+      var isOddPeriod = true;
+
       function drumLoop() {
         curTime = new Date().getTime();
         if (curTime - lastTime >= INTERVAL) {
-          for (var i = 0; i < sLen; i++) {
-            const lastBeat = beats[i*TICKS + lastTick];
-            const curBeat  = beats[i*TICKS + curTick];
+          for (var i = isOddPeriod * 1; i < sLen; i += 2) {
+            var lastBeat = beats[i * TICKS + lastTick];
+            var curBeat  = beats[i * TICKS + curTick];
+
+            if (curTick === 0) {
+              if (isOddPeriod) {
+                lastBeat = beats[(i - 1) * TICKS + lastTick];
+              } else {
+                lastBeat = beats[(i + 1) * TICKS + lastTick];
+              }
+            }
 
             lastBeat.classList.remove('ticked');
             curBeat.classList.add('ticked');
@@ -148,8 +158,12 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
             }
           };
 
+          if (curTick === TICKS - 1) {
+            isOddPeriod = !isOddPeriod;
+          }
+
           lastTick = curTick;
-          curTick = (curTick+1) % TICKS;
+          curTick = (curTick + 1) % TICKS;
           lastTime = curTime;
         }
         requestAnimationFrame(drumLoop);
