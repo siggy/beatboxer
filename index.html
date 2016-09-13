@@ -162,6 +162,19 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
         requestAnimationFrame(drumLoop);
       }
       requestAnimationFrame(drumLoop);
+
+      // adapted from https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+      function enableIOSAudio() {
+	      var buffer = audioCtx.createBuffer(1, 1, 22050);
+	      var source = audioCtx.createBufferSource();
+	      source.buffer = buffer;
+	      source.connect(audioCtx.destination);
+	      source.noteOn(0);
+
+	      window.removeEventListener('touchend', enableIOSAudio, false);
+      }
+
+      window.addEventListener('touchend', enableIOSAudio, false);
     </script>
   </body>
 </html>
