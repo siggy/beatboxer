@@ -90,23 +90,26 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
       const grid = document.getElementById('grid');
       const sLen = sounds.length;
 
-      for (let i = 0; i < sLen; i++) {
-        // create buffer for sound
-        const req = new XMLHttpRequest();
-        req.open('GET', sounds[i], true);
-        req.responseType = 'arraybuffer';
-        req.onload = function () {
-          audioCtx.decodeAudioData(req.response,
-            function (buffer) {
-              buffers.push(buffer);
-            }
-          );
-        };
-        req.send();
+      for (var i = 0; i < sLen; i++) {
+        (function(){
+          // create buffer for sound
+          const req = new XMLHttpRequest();
+          req.open('GET', sounds[i], true);
+          req.responseType = 'arraybuffer';
+          req.onload = function() {
+            audioCtx.decodeAudioData(
+              req.response,
+              function(buffer) {
+                buffers.push(buffer);
+              }
+            );
+          };
+          req.send();
+        })();
 
         // create row for sound
         const fragment = document.createDocumentFragment();
-        for (let t = 0; t < TICKS; ++t) {
+        for (var t = 0; t < TICKS; ++t) {
           const btn = document.createElement('button');
           btn.className = 'beat';
           btn.addEventListener('click', function() {
@@ -120,16 +123,16 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
 
       const beats = document.getElementsByClassName('beat');
 
-      let lastTick = TICKS-1;
-      let curTick  = 0;
+      var lastTick = TICKS-1;
+      var curTick  = 0;
 
-      let lastTime = new Date().getTime();
-      let curTime  = lastTime;
+      var lastTime = new Date().getTime();
+      var curTime  = lastTime;
 
       function drumLoop() {
         curTime = new Date().getTime();
         if (curTime - lastTime >= INTERVAL) {
-          for (let i = 0; i < sLen; i++) {
+          for (var i = 0; i < sLen; i++) {
             const lastBeat = beats[i*TICKS + lastTick];
             const curBeat  = beats[i*TICKS + curTick];
 
