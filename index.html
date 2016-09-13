@@ -140,13 +140,13 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
             lastBeat.classList.remove('ticked');
             curBeat.classList.add('ticked');
 
-            if (curBeat.classList.contains('on')) {
+            if (curBeat.classList.contains('on') && buffers.length > 0) {
               const source = audioCtx.createBufferSource();
               source.buffer = buffers[i];
               source.connect(audioCtx.destination);
               source.start();
             }
-          };
+          }
 
           lastTick = curTick;
           curTick = (curTick + 1) % TICKS;
