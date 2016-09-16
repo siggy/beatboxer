@@ -4,157 +4,180 @@ Beatboxer
 Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
 -->
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Beatboxer</title>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Beatboxer</title>
 
-    <style>
-      body {
-        background-color: black;
+  <style>
+    body {
+      background-color: black;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    button {
+      background-color: black;
+      padding: 10px;
+      border: 10px solid white;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    button.on {
+      background-color: red;
+      border-color: red;
+    }
+
+    button.ticked {
+      background-color: white;
+      border-color: white;
+    }
+
+    #grid {
+      width: 800px;
+      height: 200px;
+      position: absolute;
+      top:0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+
+  <a href="https://github.com/siggy/beatboxer">
+    <img
+      style="position: absolute; top: 0; right: 0; border: 0;"
+      src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+      alt="Fork me on GitHub"
+      data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
+  </a>
+
+  <script>
+    const BPM = 120;
+    const TICKS = 16;
+    const INTERVAL = 1 / (4 * BPM / (60 * 1000));
+
+    // sounds originated from http://808.html909.com
+    const sounds = [
+      'sounds/bass_drum.wav',
+      'sounds/snare_drum.wav',
+      'sounds/low_tom.wav',
+      'sounds/mid_tom.wav',
+
+      // 'sounds/hi_tom.wav',
+      // 'sounds/rim_shot.wav',
+      // 'sounds/hand_clap.wav',
+      // 'sounds/cowbell.wav',
+      // 'sounds/cymbal.wav',
+      // 'sounds/o_hi_hat.wav',
+      // 'sounds/cl_hi_hat.wav',
+
+      // 'sounds/low_conga.wav',
+      // 'sounds/mid_conga.wav',
+      // 'sounds/hi_conga.wav',
+      // 'sounds/claves.wav',
+      // 'sounds/maracas.wav',
+    ];
+
+    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+    const buffers = [];
+    const grid = document.getElementById('grid');
+    const sLen = sounds.length;
+
+    for (var soundIndex = 0; soundIndex < sLen; ++soundIndex) {
+      (function (index) {
+        // create buffer for sound
+        const req = new XMLHttpRequest();
+        req.open('GET', sounds[index], true);
+        req.responseType = 'arraybuffer';
+        req.onload = function () {
+          audioCtx.decodeAudioData(
+            req.response,
+            function (buffer) {
+              buffers.push(buffer);
+            }
+          );
+        };
+        req.send();
+      })(soundIndex);
+
+      // create row for sound
+      const fragment = document.createDocumentFragment();
+
+      for (var t = 0; t < TICKS; ++t) {
+        const btn = document.createElement('button');
+        btn.className = 'beat';
+        btn.addEventListener('click', function () {
+          this.classList.toggle('on');
+        }, false);
+
+        fragment.appendChild(btn);
       }
 
-      p {
-        margin: 0;
-      }
+      grid.appendChild(fragment);
+      grid.appendChild(document.createElement('p'));
+    }
 
-      button {
-        background-color: black;
-        padding: 10px;
-        border: 10px solid white;
-        margin: 5px;
-        cursor: pointer;
-      }
+    const beats = document.getElementsByClassName('beat');
 
-      button.on {
-        background-color: red;
-        border-color: red;
-      }
+    var lastTick = TICKS - 1;
+    var curTick = 0;
 
-      button.ticked {
-        background-color: white;
-        border-color: white;
-      }
+    var lastTime = new Date().getTime();
 
-      #grid {
-        width: 800px;
-        height: 200px;
-        position: absolute;
-        top:0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        margin: auto;
-      }
-    </style>
-  </head>
+    function drumLoop() {
+      const curTime = new Date().getTime();
 
-  <body>
-    <div id="grid"></div>
+      if (curTime - lastTime >= INTERVAL) {
+        for (var i = 0; i < sLen; ++i) {
+          const lastBeat = beats[i * TICKS + lastTick];
+          const curBeat = beats[i * TICKS + curTick];
 
-    <a href="https://github.com/siggy/beatboxer">
-      <img
-        style="position: absolute; top: 0; right: 0; border: 0;"
-        src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
-        alt="Fork me on GitHub"
-        data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png">
-    </a>
+          lastBeat.classList.remove('ticked');
+          curBeat.classList.add('ticked');
 
-    <script>
-      const BPM = 120;
-      const TICKS = 16;
-      const INTERVAL = 1 / (4 * BPM / (60 * 1000));
-
-      // sounds originated from http://808.html909.com
-      const sounds = [
-        'sounds/bass_drum.wav',
-        'sounds/snare_drum.wav',
-        'sounds/low_tom.wav',
-        'sounds/mid_tom.wav',
-
-        // 'sounds/hi_tom.wav',
-        // 'sounds/rim_shot.wav',
-        // 'sounds/hand_clap.wav',
-        // 'sounds/cowbell.wav',
-        // 'sounds/cymbal.wav',
-        // 'sounds/o_hi_hat.wav',
-        // 'sounds/cl_hi_hat.wav',
-
-        // 'sounds/low_conga.wav',
-        // 'sounds/mid_conga.wav',
-        // 'sounds/hi_conga.wav',
-        // 'sounds/claves.wav',
-        // 'sounds/maracas.wav',
-      ];
-
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const buffers = [];
-      const grid = document.getElementById('grid');
-      const sLen = sounds.length;
-
-      for (var i = 0; i < sLen; i++) {
-        (function(){
-          // create buffer for sound
-          const req = new XMLHttpRequest();
-          req.open('GET', sounds[i], true);
-          req.responseType = 'arraybuffer';
-          req.onload = function() {
-            audioCtx.decodeAudioData(
-              req.response,
-              function(buffer) {
-                buffers.push(buffer);
-              }
-            );
-          };
-          req.send();
-        })();
-
-        // create row for sound
-        const fragment = document.createDocumentFragment();
-        for (var t = 0; t < TICKS; ++t) {
-          const btn = document.createElement('button');
-          btn.className = 'beat';
-          btn.addEventListener('click', function() {
-            this.classList.toggle('on');
-          }, false);
-          fragment.appendChild(btn);
-        }
-        grid.appendChild(fragment);
-        grid.appendChild(document.createElement('p'));
-      };
-
-      const beats = document.getElementsByClassName('beat');
-
-      var lastTick = TICKS-1;
-      var curTick  = 0;
-
-      var lastTime = new Date().getTime();
-      var curTime  = lastTime;
-
-      function drumLoop() {
-        curTime = new Date().getTime();
-        if (curTime - lastTime >= INTERVAL) {
-          for (var i = 0; i < sLen; i++) {
-            const lastBeat = beats[i*TICKS + lastTick];
-            const curBeat  = beats[i*TICKS + curTick];
-
-            lastBeat.classList.remove('ticked');
-            curBeat.classList.add('ticked');
-
-            if (curBeat.classList.contains('on')) {
+          if (curBeat.classList.contains('on')) {
+            try {
               const source = audioCtx.createBufferSource();
               source.buffer = buffers[i];
               source.connect(audioCtx.destination);
               source.start();
-            }
-          };
+            } catch (e) {
+              console.error(e.message);
 
-          lastTick = curTick;
-          curTick = (curTick+1) % TICKS;
-          lastTime = curTime;
+              // Fallback method
+              new Audio(sounds[i]).play();
+            }
+          }
         }
-        requestAnimationFrame(drumLoop);
+
+        lastTick = curTick;
+        curTick = (curTick + 1) % TICKS;
+        lastTime = curTime;
       }
       requestAnimationFrame(drumLoop);
-    </script>
-  </body>
+    }
+    requestAnimationFrame(drumLoop);
+
+    // adapted from https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+    function enableIOSAudio() {
+      const buffer = audioCtx.createBuffer(1, 1, 22050);
+      const source = audioCtx.createBufferSource();
+
+      source.buffer = buffer;
+      source.connect(audioCtx.destination);
+      source.noteOn(0);
+
+      window.removeEventListener('touchend', enableIOSAudio, false);
+    }
+    window.addEventListener('touchend', enableIOSAudio, false);
+  </script>
+</body>
 </html>
