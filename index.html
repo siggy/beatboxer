@@ -63,6 +63,8 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     const BPM = 120;
     const TICKS = 16;
     const INTERVAL = 1 / (4 * BPM / (60 * 1000));
+    const MAX_BITS = 32;
+    const MAX_HEX = MAX_BITS / 4;
 
     // sounds originated from http://808.html909.com
     const sounds = [
@@ -91,15 +93,41 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     const grid = document.getElementById('grid');
     const sLen = sounds.length;
 
+    function binToHex(bin) {
+      var hex = "";
+      for (i = 0; i < bin.length; i += MAX_BITS) {
+        var tmp = parseInt(bin.substr(i,MAX_BITS), 2).toString(16);
+        while (tmp.length < MAX_HEX) {
+          tmp = "0" + tmp;
+        }
+
+        hex += tmp;
+      }
+      return hex;
+    }
+
+    function hexToBin(hex) {
+      var bin = "";
+      for (i = 0; i < hex.length; i += MAX_HEX) {
+        var tmp = parseInt(hex.substr(i,MAX_HEX), 16).toString(2);
+        while (tmp.length < MAX_BITS) {
+          tmp = "0" + tmp;
+        }
+        bin += tmp;
+      }
+      return bin;
+    }
+
+    // represent the hash as two 32-bit integers, in hex
     function updateState() {
-      const buttons = Array.from(document.getElementsByClassName('beat'));
       var state = '';
-      
-      buttons.map(function(btn) {
+
+      Array.from(beats).map(function(btn) {
         state += btn.classList.contains('on') ? '1' : '0';
       });
-      
-      window.location.hash = state;
+
+      // TODO: this causes an unnecessary restore state
+      window.location.hash = binToHex(state);
     }
 
     function restoreState() {
@@ -108,21 +136,25 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
       if (hash !== '') {
         // Remove the first char (#...)
         hash = hash.substr(1);
-
-        const buttons = document.getElementsByClassName('beat');
-
-        // Make sure we have a valid state
-        if (hash.length === buttons.length) {
-          const arr = hash.split('');
-
-          arr.map(function(el, i) {
-            if (parseInt(el) === 1) {
-              buttons[i].classList.add('on');
-            }
-          });
-        }
+      } else {
+        hash = "0000000000000000";
       }
+
+      var bin = hexToBin(hash);
+
+      const arr = bin.split('');
+
+      arr.map(function(el, i) {
+        if (parseInt(el) === 1) {
+          beats[i].classList.add('on');
+        } else {
+          beats[i].classList.remove('on');
+        }
+      });
     }
+
+    // needed for page history
+    window.addEventListener("hashchange", function() { restoreState(); }, false);
 
     for (var soundIndex = 0; soundIndex < sLen; ++soundIndex) {
       (function (index) {
