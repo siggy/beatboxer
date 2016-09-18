@@ -91,6 +91,39 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     const grid = document.getElementById('grid');
     const sLen = sounds.length;
 
+    function updateState() {
+      const buttons = Array.from(document.getElementsByClassName('beat'));
+      var state = '';
+      
+      buttons.map(function(btn) {
+        state += btn.classList.contains('on') ? '1' : '0';
+      });
+      
+      window.location.hash = state;
+    }
+
+    function restoreState() {
+      var hash = window.location.hash;
+
+      if (hash !== '') {
+        // Remove the first char (#...)
+        hash = hash.substr(1);
+
+        const buttons = document.getElementsByClassName('beat');
+
+        // Make sure we have a valid state
+        if (hash.length === buttons.length) {
+          const arr = hash.split('');
+
+          arr.map(function(el, i) {
+            if (parseInt(el) === 1) {
+              buttons[i].classList.add('on');
+            }
+          });
+        }
+      }
+    }
+
     for (var soundIndex = 0; soundIndex < sLen; ++soundIndex) {
       (function (index) {
         // create buffer for sound
@@ -116,6 +149,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
         btn.className = 'beat';
         btn.addEventListener('click', function () {
           this.classList.toggle('on');
+          updateState();
         }, false);
 
         fragment.appendChild(btn);
@@ -164,6 +198,8 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
       }
       requestAnimationFrame(drumLoop);
     }
+    // Restore the state before we start the drum loop
+    restoreState();
     requestAnimationFrame(drumLoop);
 
     // adapted from https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
