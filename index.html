@@ -10,7 +10,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
   <meta name="description" itemprop="description" content="Beatboxer is a drum machine in about 100 lines of html/js/css" />
   <meta itemprop="name" content="Beatboxer" />
   <meta itemprop="image" content="http://sig.gy/beatboxer/thumbnail.png" />
-  
+
   <!-- Facebook Open Graph -->
   <meta property="og:title" content="Beatboxer" />
   <meta property="og:description" content="Beatboxer is a drum machine in about 100 lines of html/js/css" />
@@ -18,7 +18,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
   <meta property="og:type" content="website" />
   <meta property="og:image" content="http://sig.gy/beatboxer/thumbnail.png" />
   <meta property="og:site_name" content="Beatboxer" />
-  
+
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="Beatboxer" />
@@ -28,7 +28,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
   <meta name="twitter:url" content="http://sig.gy/beatboxer/" />
 
   <title>Beatboxer</title>
-  
+
   <link rel="canonical" href="http://sig.gy/beatboxer/" />
 
   <style>
@@ -164,11 +164,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
         hash = "0000000000000000";
       }
 
-      var bin = hexToBin(hash);
-
-      const arr = bin.split('');
-
-      arr.map(function(el, i) {
+      hexToBin(hash).split('').map(function(el, i) {
         if (parseInt(el) === 1) {
           beats[i].classList.add('on');
         } else {
