@@ -116,24 +116,23 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     const sLen = sounds.length;
 
     function binToHex(bin) {
-      var hex = "";
-      for (i = 0; i < bin.length; i += MAX_BITS) {
+      var hex = '';
+      for (i = 0, len = bin.length; i < len; i += MAX_BITS) {
         var tmp = parseInt(bin.substr(i,MAX_BITS), 2).toString(16);
         while (tmp.length < MAX_HEX) {
-          tmp = "0" + tmp;
+          tmp = '0' + tmp;
         }
-
         hex += tmp;
       }
       return hex;
     }
 
     function hexToBin(hex) {
-      var bin = "";
-      for (i = 0; i < hex.length; i += MAX_HEX) {
+      var bin = '';
+      for (i = 0, len = hex.length; i < len; i += MAX_HEX) {
         var tmp = parseInt(hex.substr(i,MAX_HEX), 16).toString(2);
         while (tmp.length < MAX_BITS) {
-          tmp = "0" + tmp;
+          tmp = '0' + tmp;
         }
         bin += tmp;
       }
@@ -154,13 +153,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
 
     function restoreState() {
       var hash = window.location.hash;
-
-      if (hash !== '') {
-        // Remove the first char (#...)
-        hash = hash.substr(1);
-      } else {
-        hash = "0000000000000000";
-      }
+      hash = (hash === '') ? '0000000000000000' : hash.substr(1); // Remove the first char (#...)
 
       hexToBin(hash).split('').map(function(el, i) {
         if (parseInt(el) === 1) {
@@ -172,7 +165,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     }
 
     // needed for page history
-    window.addEventListener("hashchange", function() { restoreState(); }, false);
+    window.addEventListener('hashchange', restoreState, false);
 
     for (var soundIndex = 0; soundIndex < sLen; ++soundIndex) {
       (function (index) {
