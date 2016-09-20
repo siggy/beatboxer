@@ -165,7 +165,7 @@ Inspired by https://www.youtube.com/watch?v=6O_92BTrUcA
     }
 
     // needed for page history
-    window.addEventListener('hashchange', function() { restoreState(); }, false);
+    window.addEventListener('hashchange', restoreState, false);
 
     for (var soundIndex = 0; soundIndex < sLen; ++soundIndex) {
       (function (index) {
