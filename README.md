@@ -1,5 +1,5 @@
 # beatboxer
-Drum machine in about 100 lines of html/js/css
+Drum machine in a few hundred lines of html/js/css
 
 Demo: http://sig.gy/beatboxer/
 
